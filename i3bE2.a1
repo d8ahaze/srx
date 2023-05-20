@@ -1,0 +1,376 @@
+/*
+@host 40.81.94.43 (duckduckgo.com) [interface]
+https://duckduckgogg42xjoc72x3sjasowoarfbgcmvfimaftt6twagswzczad.onion/html/
+*/
+
+/* Types */
+typedef unsigned long int size_t;
+#include "Isn2O.a1t" // FILE
+
+int main(int x1, char * x2[]) {
+  /* External deps */
+  extern char * strcat(char * restrict x1, const char * restrict x2);
+  extern int printf(const char * restrict x1, ...);
+  extern FILE * fopen(const char * restrict x1, const char * restrict x2);
+  extern size_t fread(void * restrict x1, size_t x2, size_t x3, FILE * x4);
+  extern int fclose(FILE * x1);
+  extern int system(const char * x1);
+  extern int strcmp(const char * x1, const char * x2);
+  extern void free(void * x1);
+  /* Internal deps */
+  char ** f4(char * x1);
+  int f1(char * x1);
+  unsigned char f2(char * x1, char * x2[]);
+  unsigned char f3(char ** x1, char *** x2);
+   
+  /* a. Check for right usage */
+  if (x1 == 1) {
+    printf("%s\n", "provide string to search: [progname] \"how+to+live+if+you\'re+green\"");
+    printf("%s\n", "or use log to see previous searches: [progname] --log");
+    return 1;
+  }
+   
+  /* b. craft a url for search string execute its and write results to temp file
+   * since overwritten by next usage. */
+  if (strcmp(x2[1], "--log") != 0) {
+  char v1[128] = "";
+  strcat(v1, "/gD28s/use/bin/torsocks curl \"https://duckduckgogg42xjoc72x3sjasowoarfbgcmvfimaftt6twagswzczad.onion/html/?q=");
+  strcat(v1, *(x2 + 1));
+  strcat(v1, "\" > i3bE2.ot"); 
+  system(v1);
+  /* if curl fails its creates an empty file. */
+  FILE * v8 = fopen("i3bE2.ot", "r");
+  char v9;
+  if (fread(&v9, 1, 1, v8) != 1) {
+    printf("%s\n", "Connection fail");
+    return 1;
+  }
+  if (fclose(v8) != 0) {
+    return 1;
+  }
+   
+  /* f4 outputs results as soon as they are found, but i can start store them
+   * only after the f4 ends. So, possibly i should allocate memory here.
+   */
+  char ** v2 = f4("i3bE2.ot"); 
+   
+  /* cache search */
+  signed char v7 = f2(x2[1], v2);
+  if (v7 == 0) {
+    printf("%s\n", "Known error while write data as bin");
+    return 1;
+  }
+  else if (v7 == 1) {
+    printf("%s\n", "Done writting data as bin");
+  }
+  else {
+    printf("%s\n", "Unknown error while write data as bin");
+    return 1;
+  }
+   
+  free(v2);
+  }
+   
+  if (strcmp(x2[1], "--log") == 0) {
+    /* history search string */
+    char * v3 = (void *)0;
+    /* history links */
+    char ** v4 = (void *)0;
+    /* check if should to continue */
+    unsigned char v5 = 0;
+    while (1) {
+      v5 = f3(&v3, &v4);
+      if (v5 == 0) {
+        printf("%s\n", "Known error while reading from bin data file");
+        return 1;
+      }
+      else if ((v5 == 1) || (v5 == 2)) {
+        printf("search str: %s\n", v3);
+        unsigned char v6 = 0;
+        while (v4[v6] != (void *)0) {
+          printf("%d: %s\n", v6, v4[v6]);
+          ++v6;
+        }
+        if (v5 == 2) {
+          free(v3); free(v4);
+          continue;
+        }
+        else {
+          free(v3); free(v4);
+          break;
+        }
+      }
+      else {
+        printf("%s\n", "Unknown error while reading from bin data file");
+        return 1;
+      }
+    }
+  }
+   
+  return 0;
+}
+
+/**
+ * parse html file returned by duckduckgo to extract links
+ * ret dynamically allocated array of pointers to links
+ * max_mem_use: 8B * links_num + (links_lens)
+ * speed: steps(links^link_len) -- ?(is it true)
+ **/
+char ** f4(char * x1) {
+  /* Types */
+  typedef long int ssize_t;
+  /* External deps */
+  extern FILE * fopen(const char * restrict x1, const char * restrict x2);
+  extern int fseek(FILE * x1, long int x2, int x3);
+  extern size_t fread(void * restrict x1, size_t x2, size_t x3, FILE * x4);
+  extern void * malloc(size_t x1);
+  extern ssize_t getline(char ** restrict x1, size_t * restrict x2, FILE * restrict x3);
+  extern void * realloc(void * x1, size_t x2);
+  extern void free(void * x1);
+  extern int fclose(FILE * x1);
+  extern int printf(const char * restrict x1, ...);
+   
+  FILE * v1 = fopen(x1, "r");
+   
+  /* Skip head html stuff: jump to line 204 (6248B) */
+  if (fseek(v1, 6248, 0) != 0) {
+    return (void *)0;
+  }
+   
+  /* Skip for zero click page 1500B and for normal 300B to set file position
+   * indicator before first link (result__title) */
+  char v2;
+  if (fread(&v2, sizeof(char), 1, v1) != 1) {
+    return (void *)0;
+  }
+  if (v2 == '!') {
+    if (fseek(v1, 1500, 1) != 0) {
+      return (void *)0;
+    }
+  }
+  else {
+    if (fseek(v1, 370, 1) != 0) {
+      return (void *)0;
+    }
+  }
+   
+  char * line = (void *)0;
+  size_t len = 0;
+  ssize_t nread;
+  char resurl[11] = "result__url";
+  char ** nasdaq = malloc(sizeof(char *) * 10);
+  unsigned char should_add = 0;
+  unsigned char link_index = 0;
+  char * pure_line;
+  while ((nread = getline(&line, &len, v1)) != -1) {
+    if (should_add == 1) {
+      pure_line = malloc(sizeof(char *) * 255);
+      unsigned char pli = 0; // pure line index
+      unsigned char dli = 18; // dirty line index
+      while (line[dli] != '\n') {
+        pure_line[pli] = line[dli];
+        ++pli; ++dli;
+      }
+      pure_line[pli] = '\0';
+      pure_line = realloc(pure_line, pli + 1);
+      if (link_index > 9) {
+        nasdaq = realloc(nasdaq, (sizeof(char *) * 10) + (sizeof(char *) * (link_index - 9)));
+      }
+      printf("%i: %s\n", link_index, pure_line);
+      nasdaq[link_index] = pure_line;
+      pure_line = (void *)0;
+      should_add = 0;
+      ++link_index;
+      continue;
+    }
+     
+    signed char rui = 0; // result url index
+    signed char bli = 28; // line preceding link index
+     
+    while ((rui < 11) && (bli < 39)) {
+      if (line[bli] == resurl[rui]) {
+        ++rui; ++bli;
+        continue;
+      }
+      else {
+        break;
+      }
+    }
+     
+    if ((bli == 39) && (rui == 11)) {
+      should_add = 1;
+      continue;
+    }
+    else {
+      continue;
+    }
+  }
+   
+  /* sign end */
+  nasdaq = realloc(nasdaq, (sizeof(char *) * 10) + (sizeof(char *) * (link_index - 9)));
+  nasdaq[link_index] = (void *)0;
+   
+  free(pure_line);
+   
+  if (fclose(v1) != 0) {
+    return (void *)0;
+  }
+   
+  return nasdaq;
+}
+
+/**
+ * write search results as binary
+ **/
+unsigned char f2(char * x1, char * x2[]) {
+  /* External deps */
+  extern FILE * fopen(const char * restrict x1, const char * restrict x2);
+  extern size_t fwrite(const void * restrict x1, size_t x2, size_t x3, FILE * restrict x4);
+  extern int fclose(FILE * x1);
+  /* Internal deps */
+  int f1(char * x1);
+   
+  /* File format:
+   * | byte1={0,255} | -- len of sea str; | byte1_0 ... byte1_255 |
+   * | byte2={0,255} | -- num of links; | byte2_0, byte_2_1, ..., byte2_255 |
+   * -- lens of links; | links...
+   */
+   
+  FILE * v1 = fopen("i3bE2.bd", "ab");
+  if (v1 == (void *)0) {
+    return 0;
+  }
+   
+  unsigned char v2;
+   
+  /* write the length of search string */
+  v2 = f1(x1);
+  if (fwrite(&v2, 1, 1, v1) != 1) {
+    return 0;
+  }
+  /* write a search string */
+  // arg1: write data starting at x1 memory address
+  // arg2: of the size 1B (sizeof(x1[0]), sizeof(char))
+  // arg3: f1(x1) times ?(go to next adr f1(x1) times and also write)
+  // arg4: to the stream (file) v1
+  if (fwrite(x1, 1, v2, v1) != (unsigned long int) v2) {
+    return 0;
+  }
+   
+  /* write a number of links and its lens */
+  v2 = 0;
+  unsigned char v3[255];
+  while (x2[v2] != (void *)0) {
+    v3[v2] = f1(x2[v2]);
+    ++v2;
+  }
+  if (fwrite(&v2, 1, 1, v1) != 1) {
+    return 0;
+  }
+  if (fwrite(v3, 1, v2, v1) != (unsigned long int) v2) {
+    return 0;
+  }
+   
+  /* write links */
+  unsigned char v4 = 0;
+  while (v4 < v2) {
+    if (fwrite(x2[v4], 1, v3[v4], v1) != (unsigned long int) v3[v4]) {
+      return 0;
+    }
+    ++v4;
+  }
+   
+  if (fclose(v1) != 0) {
+    return 0;
+  }
+   
+  return 1;
+}
+
+unsigned char f3(char ** x1, char *** x2) {
+  /* External deps */
+  extern FILE * fopen(const char * restrict x1, const char * restrict x2);
+  extern size_t fread(void * restrict x1, size_t x2, size_t x3, FILE * x4);
+  extern void * malloc(size_t x1);
+  extern void * realloc(void * x1, size_t x2);
+  extern int feof(FILE * x1);
+  extern long int ftell(FILE * x1);
+  extern int fseek(FILE * x1, long int x2, int x3);
+  extern int fclose(FILE * x1);
+   
+  FILE * v1 = fopen("i3bE2.bd", "rb");
+  if (v1 == (void *)0) {
+    return 0;
+  }
+   
+  static long int v5 = 0;
+  if (v5 != 0) {
+    if (fseek(v1, v5, 0) != 0) {
+      return 0;
+    }
+  }
+   
+  unsigned char v2;
+   
+  /* read the length of search string */
+  if (fread(&v2, 1, 1, v1) != 1) {
+    return 0;
+  }
+  /* read a search string */
+  *x1 = malloc(sizeof(char) * v2); // v2 + 1?
+  if (fread(*x1, 1, v2, v1) != (unsigned long int) v2) {
+    return 0;
+  }
+   
+  /* read a number of links */
+  v2 = 0;
+  if (fread(&v2, 1, 1, v1) != 1) {
+    return 0;
+  }
+  /* read length of links */
+  unsigned char v3[255];
+  if (fread(v3, 1, v2, v1) != v2) {
+    return 0;
+  }
+   
+  /* read links */
+  unsigned char v4 = 0;
+  *x2 = malloc(sizeof(char *) * v2);
+  while (v4 < v2) {
+    (*x2)[v4] = malloc(sizeof(char) * v3[v4]);
+    if (fread((*x2)[v4], 1, v3[v4], v1) != (unsigned long int) v3[v4]) {
+      return 0;
+    }
+    ++v4;
+  }
+  /* denote end as null */
+  *x2 = realloc(*x2, sizeof(char *) * (v2 + 1));
+  (*x2)[v2] = (void *)0;
+   
+  /* check if we have to continue read (2) at next call or it is end (1) */
+  if (fread(&v2, 1, 1, v1) != 1) {
+    if (feof(v1)) {
+      return 1;
+    }
+  }
+  v5 = ftell(v1) - 1;
+  if (fclose(v1) != 0) {
+      return 0;
+  }
+  return 2;
+}
+
+/*
+@hand ("strlen")
+*/
+int f1(char * x1) {
+  int v1 = 0;
+  while (1) {
+    if (x1[v1] != '\0') {
+      ++v1;
+    }
+    else {
+      return v1;
+    }
+  }
+}
