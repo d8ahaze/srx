@@ -1,0 +1,230 @@
+/*
+@handle (random)
+*/
+
+/* extern deps of f0 */
+#include <stdio.h>
+/* local deps of f0 */
+int f1(int x1, int x2, int x3, int x4, int * x5);
+long int f3_1(int x1);
+long int f3_2(int x1);
+long int f3_3(int x1);
+/**
+ * usage example
+ **/
+int main(void) {
+  int v1[20];
+   
+  f1(2, 1, 0, 9, v1);
+  int v2 = 0;
+  while (v2 < 20) {
+    printf("%i ", v1[v2]);
+    ++v2;
+  }
+  printf("\n");
+   
+  f1(2, 3, 0, 9, v1);
+  v2 = 0;
+  while (v2 < 20) {
+    printf("%i ", v1[v2]);
+    ++v2;
+  }
+  printf("\n");
+   
+  f1(4, 0, 1, 9, v1);
+  v2 = 0;
+  while (v2 < 20) {
+    printf("%i ", v1[v2]);
+    ++v2;
+  }
+  printf("\n");
+   
+  f1(7, 1, 0, 11, v1);
+  v2 = 0;
+  while (v2 < 20) {
+    printf("%i ", v1[v2]);
+    ++v2;
+  }
+  printf("\n");
+   
+  int v3[20];
+  int v4 = f1(5, 1, 0, 11, v3);
+  v2 = 0;
+  while (v2 < v4) {
+    printf("%i ", v3[v2]);
+    ++v2;
+  }
+  printf("\n");
+   
+  v4 = f1(6, 1, 0, 11, v3);
+  v2 = 0;
+  while (v2 < v4) {
+    printf("%i ", v3[v2]);
+    ++v2;
+  }
+  printf("\n");
+   
+  long int v5_1, v5_2, v5_3;
+   
+  v5_1 = f3_1(5);
+  v5_2 = f3_2(5);
+  v5_3 = f3_3(5);
+  printf("f3_1,2,3(5): %li, %li, %li\n", v5_1, v5_2, v5_3);
+   
+  v5_1 = f3_1(8);
+  v5_2 = f3_2(8);
+  v5_3 = f3_3(8);
+  printf("f3_1,2,3(8): %li, %li, %li\n", v5_1, v5_2, v5_3);
+   
+  v5_1 = f3_1(11);
+  v5_2 = f3_2(11);
+  v5_3 = f3_3(11);
+  printf("f3_1,2,3(11): %li, %li, %li\n", v5_1, v5_2, v5_3);
+   
+  /**
+  long int v7[10000];
+  struct timespec v5;
+  timespec_get(&v5, TIME_UTC);
+  int a = 16807;
+  long int v6 = v5.tv_nsec;
+  printf("ns: %li\n", v6);
+  long int m = 2147483647;
+  v4 = f1_2(a, v6, 0, m, v7);
+  v2 = 0;
+  while (v2 < v4) {
+    printf("%li ", v7[v2]);
+    ++v2;
+  }
+  printf("\n");
+  **/
+  return 0;
+}
+
+/* extern deps */
+#include <time.h>
+/* local deps */
+long int f1_3(long int x1, long int x2, int x3, long int x4, int x5);
+long int f2_1(int x1, int x2);
+/**
+ * call f1_3 rand engine with some standard parameters
+ **/
+long int f3_1(int x1) {
+  struct timespec v1;
+  timespec_get(&v1, TIME_UTC);
+  /* Despite there is small chance of getting the same nanoseconds in two different
+   * seconds, reduce it even more. (10^9 -- cut 20plus years) */
+  long int v2 = v1.tv_sec - 1000000000 + v1.tv_nsec;
+   
+  int v3 = f2_1(7, 5); // 16807
+  long int v4 = f2_1(2, 31) - 1; // 2147483647
+   
+  long int v5 = f1_3(v3, v2, 0, v4, x1);
+  return v5;
+}
+
+/* extern deps */
+#include <time.h>
+/* local deps */
+long int f1_3(long int x1, long int x2, int x3, long int x4, int x5);
+long int f2_1(int x1, int x2); 
+/**
+ * ...
+ **/
+long int f3_2(int x1) {
+  struct timespec v1;
+  timespec_get(&v1, TIME_UTC);
+  long int v2 = v1.tv_sec - 1000000000 + v1.tv_nsec;
+   
+  int v3 = 48271;
+  long int v4 = f2_1(2, 31) - 1; // 2147483647
+   
+  long int v5 = f1_3(v3, v2, 0, v4, x1);
+  return v5;
+}
+
+/* extern deps */
+#include <time.h>
+/* local deps */
+long int f1_3(long int x1, long int x2, int x3, long int x4, int x5);
+long int f2_1(int x1, int x2);
+/**
+ * glibc/stdlib/random_r.c:362 parameters
+ **/
+long int f3_3(int x1) {
+  struct timespec v1;
+  timespec_get(&v1, TIME_UTC);
+  long int v2 =  v1.tv_sec - 1000000000 + v1.tv_nsec;
+   
+  long int v3 = 1103515245;
+  int v4 = 12345;
+  long int v5 = f2_1(2, 31) - 1; // 2147483647
+   
+  long int v6 = f1_3(v3, v2, v4, v5, x1);
+  return v6;
+}
+
+/**
+ * dynamic array to test on parameters period of which unknown
+ * x2 -- the seed (start value);
+ **/
+int f1(int x1, int x2, int x3, int x4, int * x5) { 
+  *x5 = x2;
+  int v2 = 1;
+  int v3;
+  while (1) {
+    v3 = (x1 * x5[v2 - 1] + x3) % x4;
+    // after that, the sequence repeats
+    if (v3 == *x5) {
+      break;
+    }
+    x5[v2] = v3;
+    ++v2;
+  }
+  return v2;
+}
+
+int f1_2(int x1, long int x2, int x3, long int x4, long int * x5) { 
+  *x5 = x2;
+  printf("%li\n", x5[0]);
+  int v2 = 1;
+  long int v3;
+  while (1) {
+    v3 = (x1 * x5[v2 - 1] + x3) % x4;
+    printf("mlt: %li\n", x1 * x5[v2 - 1]);
+    printf("mdl: %li\n", (x1 * x5[v2 - 1]) % x4);
+    printf("div: %li\n", (x1 * x5[v2 - 1]) / x4);
+    printf("%i\n", v2);
+    // after that, the sequence repeats
+    if (v3 == *x5) {
+      break;
+    }
+    x5[v2] = v3;
+    ++v2;
+  }
+  printf("%s\n", "exit");
+  return v2;
+}
+
+/**
+ * random numbers generator engine
+ * since amount of periods is unknown use user's value to create vla.
+ **/
+long int f1_3(long int x1, long int x2, int x3, long int x4, int x5) { 
+  long int v1[x5];
+  v1[0] = x2;
+  int v2 = 1;
+  while (v2 < x5) {
+    v1[v2] = (x1 * v1[v2 - 1] + x3) % x4;
+    ++v2;
+  }
+  return v1[v2 - 1];
+}
+
+long int f2_1(int x1, int x2) {
+  long int v1 = x1;
+  while (x2 != 1) {	// x1=2, x2=4
+    v1 *= x1;		// 4, 8, 16,
+    --x2;		// 3, 2, 1,
+  }
+  return v1;
+}
