@@ -1,0 +1,173 @@
+/* extract and wrap (format, style) an image source to pass to converter */
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <unistd.h> // ftruncate
+
+int main(int argc, const char ** argv) {
+  /* dir, filename */
+  const char * v1 = *(argv + 1);
+  /* element */
+  const char * v2 = *(argv + 2);
+  /* directory */
+  const char * v3 = *(argv + 3);
+   
+  /* top */
+  char v4[128] = "echo \"\\documentclass{standalone}\" > ";
+  strcat(v4, v3);
+  strcat(v4, "/");
+  strcat(v4, v2);
+  strcat(v4, ".tex");
+  // system(v4);
+   
+  /* top math wrap */
+  const char * v5 =
+    "\\documentclass{standalone}\n"
+    "\\usepackage{amsmath}\n"
+    "\\usepackage[T2A,T1]{fontenc}\n"
+    "\\usepackage[utf8]{inputenc}\n"
+    "\\usepackage{fontspec}\n"
+    "\\usepackage[mono=true]{libertine}\n"
+    "\\usepackage[english]{babel}\n"
+    "\\usepackage{tikz}\n"
+    "\\begin{document}\n"
+    "\\newcommand{\\dsp}{\\displaystyle}\n"
+    "\\newcommand{\\ddx}[1]{\\frac{\\mathrm{d}}{\\mathrm{d}x}(#1)}\n"
+    "\\newcommand{\\idx}[1]{\\int#1\\mathrm{d}x}\n"
+    "\\newcommand{\\startmath}{\\begin{math}\\begin{array}{l | c | c | c | r}}\n"
+    "\\newcommand{\\stopmath}{\\end{array}\\end{math}}\n"
+    "{\\small";
+  /* bot math wrap */
+  const char * v6 =
+    "\\end{array}\n"
+    "\\end{math}\n";
+   
+  /* top natlng wrap */
+  const char * v7 =
+    "\\documentclass{article}\n"
+    "\%\\usepackage[margin=3mm,paperwidth=114mm,paperheight=63mm]{geometry}\n" // if in the top right pane then right margin to 15
+    "\\usepackage[top=3mm,bottom=3mm,left=3mm,right=15mm,paperwidth=114mm,paperheight=63mm]{geometry}\n"
+    "\\setlength{\\parindent}{0pt}\n"
+    "\\usepackage{amsmath}\n" // if inline math there is
+    "\\usepackage[T2A,T1]{fontenc}\n"
+    "\\usepackage[utf8]{inputenc}\n"
+    "\\usepackage{fontspec}\n"
+    "\\usepackage[mono=true]{libertine}\n"
+    "\\usepackage[english,russian]{babel}\n"
+    "\\usepackage{hyphenat}\n"
+    "\\hyphenation{prog-ram-ming}\n"
+    "\\showhyphens{programming}\n"
+    "\\hyphenation{qwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwerty-qwerty-qwerty-qwerty-qwerty}\n"
+    "\\begin{document}\n"
+    "\\newcommand{\\dsp}{\\displaystyle}\n"
+    "\\newcommand{\\ddx}[1]{\\frac{\\mathrm{d}}{\\mathrm{d}x}(#1)}\n"
+    "\\newcommand{\\idx}[1]{\\int#1\\mathrm{d}x}\n"
+    "{\\small ";
+  /* bot math, natlng wrap */
+  const char * v8 = "\\end{document}\n";
+   
+  char v9[1024] = "echo \"";
+   
+  if ((v2[2] == '1') || (v2[2] == '3')) {
+    strcat(v9, v5);
+  }
+  else if (v2[2] == '2') {
+    strcat(v9, v7);
+  }
+  strcat(v9, "\" > ");
+  strcat(v9, v3);
+  strcat(v9, "/");
+  strcat(v9, v2);
+  strcat(v9, ".tex");
+  system(v9);
+   
+  char * line = NULL;
+  size_t len = 0;
+  ssize_t nread;
+  FILE * stream = fopen(v1, "r");
+  char out_elem_file[64] = "";
+  strcat(out_elem_file, v3);
+  strcat(out_elem_file, "/");
+  strcat(out_elem_file, v2);
+  strcat(out_elem_file, ".tex");
+  FILE * output = fopen(out_elem_file, "a");
+  int vX = 0;
+  while ((nread = getline(&line, &len, stream)) != -1) {
+    line[strlen(line) - 1] = '\0';
+    if (strcmp(line, v2) != 0 && vX == 0) {
+      continue;
+    }
+    else if (strcmp(line, v2) == 0) {
+      vX = 1;
+      continue;
+    }
+    if (nread == 1) {
+      break;
+    }
+    fwrite(line, nread, 1, output);
+    int delchr = 1;
+    off_t posit;
+    fseeko(output,-delchr,SEEK_END);
+    posit = ftello(output);
+    ftruncate(fileno(output), posit);
+    fwrite("\n", sizeof(char), 1, output);
+  }
+  free(line);
+  fclose(stream);
+  fclose(output);
+   
+  char v10[128] = "echo \"";
+  if ((v2[2] == '1') || (v2[2] == '3')) {
+    // strcat(v10, v6);
+    strcat(v10, "}\\end{document}");
+  }
+  else if (v2[2] == '2') {
+    strcat(v10, "}\\end{document}");
+  }
+  strcat(v10, "\" >> ");
+  strcat(v10, v3);
+  strcat(v10, "/");
+  strcat(v10, v2);
+  strcat(v10, ".tex");
+  system(v10);
+   
+  char pdffile[128] = "";
+  strcat(pdffile, v3);
+  strcat(pdffile, "/");
+  strcat(pdffile, v2); 
+  strcat(pdffile, ".pdf");
+   
+  char topdf[256] = "/gD28s/use/bin/torsocks tectonic --outdir ";
+  strcat(topdf, v3);
+  strcat(topdf, " ");
+  strcat(topdf, v3);
+  strcat(topdf, "/");
+  strcat(topdf, v2);
+  strcat(topdf, ".tex");
+  system(topdf);
+   
+  char topng[128] = "pdftoppm -png ";
+  strcat(topng, pdffile);
+  strcat(topng, " > ");
+  strcat(topng, v3);
+  strcat(topng, "/");
+  strcat(topng, v2);
+  strcat(topng, ".png");
+  system(topng);
+   
+  char show[128] = "/.zxc/progs/giyT1.run1 ./";
+  strcat(show, v2);
+  strcat(show, ".png");
+  if ((v2[2] == '1') || (v2[2] == '3')) {
+    if ((argv[4] != NULL) && (argv[4][0] == 'm')) {
+      strcat(show, " m");
+    }
+    system(show);
+  }
+  else if (v2[2] == '2') {
+    strcat(show, " p");
+    system(show);
+  }
+   
+  return 0;
+}
