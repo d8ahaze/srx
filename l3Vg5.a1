@@ -1,0 +1,92 @@
+/* external deps of f0 */
+#include <stdio.h>	// printf();
+#include <time.h>
+/* loc deps */
+int f1(int * f1x1, int f1x2);
+void f3(int * f3x1, int f3x2);
+void f3_tst();
+/**
+ * ...
+ **/
+int main(void) {
+  struct timespec f3_v1_tst;
+  int f3_v2_tst = f3_v1_tst.tv_nsec;
+  printf("f3_v2_tst: %i\n", f3_v2_tst);
+  int f0v1_tst[100];
+  f3_tst();
+  f3(f0v1_tst, 100);
+  int i = 0;
+  while (i < 100) {
+    printf("%i %i\n", i, f0v1_tst[i]);
+    ++i;
+  }
+  int f0v1[30] = {5, 1, 84, 15, 4, 91, 2, 8, 145, 71, 12, 18, 7, 943, 3, 21, 14, 56, 523, 35, 4582, 3, 492, 296, 145, 141, 985, 292, 42, 98};
+  f1(f0v1, 30);
+  int f0v2 = 0;
+  while(f0v2 < 30) {
+    printf("%i ", f0v1[f0v2]);
+    ++f0v2;
+  }
+  printf("\n");
+  return 0;
+}
+
+/* local deps of f1 */
+void f2(int * f2x1, int f2x2);	// swap
+/**
+ * bubble sort
+ **/
+int f1(int * f1x1, int f1x2) {
+  short int f1v1 = 0;
+  short int f1v2 = 0;
+  while (1) {
+    if (f1x1[f1v1] > f1x1[f1v1 + 1]) {
+      f2(f1x1, f1v1);
+      ++f1v2;
+    }
+    ++f1v1;
+    if ((f1v1 == (f1x2 - 1)) && (f1v2 > 0)) {
+      f1v1 = 0;
+      f1v2 = 0;
+    }
+    if ((f1v1 == (f1x2 - 1)) && (f1v2 == 0)) {
+      break;
+    }
+  }
+  return 0;
+}
+
+/**
+ * swap in array f1x1 value f1x2 with f1x2 + 1
+ **/
+void f2(int * f2x1, int f2x2) {
+  printf("%i %i\n", f2x1[f2x2], f2x1[f2x2 + 1]);
+  f2x1[f2x2 + 1] += f2x1[f2x2];
+  printf("swpP1: v1[%i]=%i, v1[%i]=%i\n", f2x2, f2x1[f2x2], f2x2 + 1, f2x1[f2x2 + 1]);
+  f2x1[f2x2] = f2x1[f2x2 + 1] - f2x1[f2x2];
+  printf("swpP2: v1[%i]=%i, v1[%i]=%i\n", f2x2, f2x1[f2x2], f2x2 + 1, f2x1[f2x2 + 1]);
+  f2x1[f2x2 + 1] -= f2x1[f2x2];
+  printf("swpP3: v1[%i]=%i, v1[%i]=%i\n", f2x2, f2x1[f2x2], f2x2 + 1, f2x1[f2x2 + 1]);
+}
+
+/* extern deps of f3 */
+#include <time.h>
+/**
+ *
+ **/
+void f3(int * f3x1, int f3x2) {
+  struct timespec v1;
+  long int v2_tst = v1.tv_nsec;
+  printf("v2_tst: %li\n", v2_tst);
+  while (f3x2--) {
+    long int v2 = v1.tv_nsec;
+    printf("nsec: %li\n", v2);
+    *(f3x1 + f3x2) = v2;
+  }
+}
+
+void f3_tst() {
+  struct timespec v1;
+  int v2 = v1.tv_nsec;
+  printf("f3_tst: %i\n", v2);
+}

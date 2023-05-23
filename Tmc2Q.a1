@@ -1,0 +1,160 @@
+/*
+@host 1.2.3.4 (youtube.com)
+@upstream_remote_path
+@permanent_remote_path /watch?v=0SkdAoVzWpk
+@upstream_locmir_path
+@permanent_locmir_path
+@handles ("")
+@defs ("Read And Write An Array Of Structs To A Binary File")
+*/
+
+/* Types */
+typedef unsigned long int size_t;
+#include "Isn2O.a1t" // FILE
+typedef struct _t1 {
+  char v1[32];
+  int v2;
+  double v3;
+} t1;
+
+/* Local deps of f0 */
+static signed char f1(char * x1, t1 * x2, int x3);
+static t1 * f2(char * x1, int * x2);
+/* Extern deps of f0 */
+extern void * malloc(size_t x1); // __THROW __attribute_malloc__ ...
+extern char * strcpy(char * restrict x1, const char * restrict x2);
+extern int printf(const char * restrict x1, ...);
+extern void free(void * x1);
+/**
+ * ...
+ **/
+int main(void) {
+  /* dynamically allocate space to store an array of N (3) `t1' objects on the
+     heap */
+  t1 * v1 = malloc(sizeof(t1) * 3);
+   
+  strcpy(v1[0].v1, "qwert");
+  v1[0].v2 = 38632;
+  v1[0].v3 = 8934.233;
+   
+  strcpy(v1[1].v1, "asdfg");
+  v1[1].v2 = 65839;
+  v1[1].v3 = 9736.5824;
+   
+  strcpy(v1[2].v1, "zxcvb");
+  v1[2].v2 = 458290;
+  v1[2].v3 = 763.89218;
+   
+  if (f1("Tmc2Q.bd", v1, 3)) {
+    printf("%s\n", "Structs are written as binary");
+  }
+  else {
+    printf("%s\n", "error while writting arr of structs as bin data to file");
+    return 1;
+  }
+   
+  free(v1);
+   
+  int v2 = 0;
+  /* pointer to dynamically allocated array of objects of `t1' type */
+  t1 * v3 = f2("Tmc2Q.bd", &v2);
+   
+  if (v3 == (void *)0) {
+    printf("%s\n", "Error while reading arr of structs as bin data from file");
+    return 1;
+  }
+   
+  printf("%s\n", "Array of structs was read");
+  int v4 = 0;
+  while (v4 < v2) {
+    printf("v3[%i].v1: %s, ", v4, v3[v4].v1);
+    printf("v3[%i].v2: %i, ", v4, v3[v4].v2);
+    printf("v3[%i].v3: %f\n", v4, v3[v4].v3);
+    ++v4;
+  }
+   
+  free(v3);
+   
+  return 0;
+}
+
+/* External deps of f1 */
+extern FILE * fopen(const char * restrict x1, const char * restrict x2);
+extern size_t fwrite(const void * restrict x1, size_t x2, size_t x3,
+                     FILE * restrict x4);
+extern int fclose(FILE * x1);
+/**
+ * write to the filename `x1', data (array of `t1' objects, by fact address of
+ * the first element) `x2', amount of which (amount of elements of `x2') is
+ * equal to `x3'.
+ **/
+static signed char f1(char * x1, t1 * x2, int x3) {
+  /* first, write x3 to the file to know how many `t1' objects need to be read
+     from the file and to know how much space to dynamically allocate on the
+     heap to store those objects in an array, so format of file is:
+     x3, x2[0], x2[1], ... */
+   
+  FILE * v1 = fopen(x1, "wb");
+  if (v1 == (void *)0) {
+    return 0;
+  }
+   
+  /* writes data of size int (4B), 1 many times to the v1 stream (file), where
+     the data starts at &x3 memory address */
+  if (fwrite(&x3, sizeof(int), 1, v1) != 1) {
+    return 0;
+  }
+   
+  /* write data starting at x2 memory address of size t1 (?B), x3 many times to
+     the v1 stream (file) */
+  if (fwrite(x2, sizeof(t1), x3, v1) != (unsigned long int)x3) { // Could I arg2: sizeof(*x2) ?
+    return 0;
+  }
+   
+  if (fclose(v1) != 0) {
+    return 0;
+  }
+   
+  return 1;
+}
+
+/* External deps of f2 */
+extern FILE * fopen(const char * restrict x1, const char * restrict x2);
+extern size_t fread(void * restrict x1, size_t x2, size_t x3, FILE * restrict x4);
+extern void * malloc(size_t x1);
+extern void free(void * x1);
+extern int fclose(FILE * x1);
+/**
+ * read `x2' (amount) objects of `t1' from filename `x1' and return pointer to
+ * a dynamically allocated array of objects of `t1' on the heap.
+ **/
+static t1 * f2(char * x1, int * x2) {
+  FILE * v1 = fopen(x1, "rb");
+  if (v1 == (void *)0) {
+    return (void *)0;
+  }
+   
+  /* read from stream (file) `v1', 1 thing (times) with size of int (4B), and
+     store at `x2' memory address */
+  if (fread(x2, sizeof(int), 1, v1) != 1) {
+    return (void *)0;
+  }
+   
+  /* dynamically allocate space for the array of objects of `t1' type */
+  t1 * v2 = malloc(sizeof(t1) * *x2);
+   
+  /* read from stream (file) `v1', `*x2' many things (v2 elements) with the size
+     of `t1', and store at `v2' memory address (address of first element (object
+     of `t1' type) */
+  if (fread(v2, sizeof(t1), *x2, v1) != (unsigned long int) *x2) {
+    free(v2);
+    return (void *)0;
+  }
+   
+  if (fclose(v1) != 0) {
+    free(v2);
+    return (void *)0;
+  }
+   
+  return v2;
+}

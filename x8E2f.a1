@@ -155,13 +155,14 @@ int main(int argc, const char ** argv) {
   strcat(topng, ".png");
   system(topng);
    
-  char show[128] = "/.zxc/progs/giyT1.run1 ./";
+  char show[128] = "/hdp2/srx-git/giyT1.e1111 ./";
   strcat(show, v2);
   strcat(show, ".png");
   if ((v2[2] == '1') || (v2[2] == '3')) {
     if ((argv[4] != NULL) && (argv[4][0] == 'm')) {
       strcat(show, " m");
     }
+    printf(show);
     system(show);
   }
   else if (v2[2] == '2') {

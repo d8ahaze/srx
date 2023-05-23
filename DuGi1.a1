@@ -1,0 +1,91 @@
+/*
+@hand ("fread", "fwrite")
+*/
+
+/* local types for f0 */
+typedef long unsigned int size_t;
+#include "Isn2O.a1t" // FILE
+/* extern deps of f0 */
+// x1 -- array in which to write;
+// x2 -- size of one element of array (size of type of element (char: 1B, int: 4B));
+// x3 -- amount of elements in array (length of array);
+// x4 -- file from which to read;
+extern size_t fread(void * restrict x1, size_t x2, size_t x3, FILE * restrict x4);
+// x1 -- char array from which to read;
+// x2 -- 
+// x3 --
+// x4 -- file in which to write;
+extern size_t fwrite(const void * restrict x1, size_t x2, size_t x3,
+                     FILE * restrict x4);
+extern FILE * fopen(const char * restrict x1, const char * restrict x2);
+extern int printf(const char * restrict x1, ...);
+extern void rewind(FILE * x1);
+/**
+ *
+ **/
+int main(void) {
+  FILE * v1 = fopen("/usr/bin/bash", "rb");
+  unsigned char v2[4];
+  size_t v3;
+   
+  /** v3 = fread(v2, sizeof(*v2), sizeof(v2) / sizeof((v2)[0]), v1);
+  printf("v3: %lu, sizeof(*v2): %lu, ", v3, sizeof(*v2));
+  printf("sizeof(v2): %lu, sizeof((v2)[0]): %lu\n", sizeof(v2), sizeof((v2)[0])); **/
+   
+  /** int tv[5];
+  size_t z1 = fread(tv, sizeof(*tv), sizeof(tv) / sizeof((tv)[0]), v1);
+  printf("z1: %lu, sizeof(*tv): %lu, ", z1, sizeof(*tv));
+  printf("sizeof(tv): %lu, sizeof(tv[0]): %lu\n", sizeof(tv), sizeof((tv)[0])); **/
+   
+  // printf("v2[0,3]: %x, %x, %x, %x\n", v2[0], v2[1], v2[2], v2[3]);
+   
+  v3 = fread(v2, 1, 1, v1);
+  printf("v2[0]: %x, v2[1]: %x\n", v2[0], v2[1]);
+   
+  char * a = "7f";
+  printf("7f_16=%b_2\n", *a);
+  // printf("*a: %s\n", *a); -- format `%s' expects argument of type `char *'
+  printf("%i\n", *a); // format `%x' expects argument of type `unsigned int'
+   
+  FILE * v4 = fopen("DuGi1.inp", "a+");
+  size_t v5;
+  unsigned char v6[4];
+  v5 = fread(v6, 1, 4, v4);
+  printf("v5: %lu\n", v5);
+  printf("v6[0,3]: %i %i %i %i\n", v6[0], v6[1], v6[2], v6[3]);
+  printf("v6[0,3]: %c %c %c %c\n", v6[0], v6[1], v6[2], v6[3]);
+  short int v7 = 0;
+  short int v7b = 3;
+  short int v8[4];
+  while (v7 < 4) {
+    int a = v6[v7] - 48;
+    v8[v7b] = a;
+    printf("cycle: %i, ", a);
+    ++v7;
+    --v7b;
+  }
+  printf("\n %i %i %i %i\n", v8[0], v8[1], v8[2], v8[3]);
+  size_t v9 = fwrite(v6, 2, 3, v4);
+  printf("v9: %lu\n", v9);
+   
+  typedef struct _t1 {
+    int v1;
+    char v2[5];
+  } t1;
+  FILE * v10 = fopen("DuGi1.out2", "wb+");
+  t1 v11 = {5, "abc"};
+  size_t check = fwrite(&v11, sizeof(v11), 1, v10);
+  printf("check: %lu\n", check);
+  printf("writed: %i %s\n", v11.v1, v11.v2);
+  t1 v12;
+  rewind(v10);
+  fread(&v12, sizeof(v12), 1, v10);
+  printf("readed: %i %s\n", v12.v1, v12.v2);
+   
+  t1 * v13_w2[4];
+  v13_w2[0] = &v12;
+  v13_w2[0]->v1 = 7;
+  printf("ctp: %i\n", v12.v1);
+   
+  return 0;
+}

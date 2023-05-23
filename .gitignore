@@ -1,0 +1,18 @@
+# system dependent (linux) from c
+*.b11
+
+# x86-64 asm from c
+*.c111
+
+# object files (elf)
+*.d1111
+
+# linked executables
+*.e1111
+
+# pages / books / mans
+*.zxc
+
+# binary data, some outputs (temps, logs, ...)
+*.bd
+*.ot

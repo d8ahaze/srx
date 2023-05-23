@@ -1,0 +1,13 @@
+#include <stdio.h>
+/**
+ * swap in array f1x1 value f1x2 with f1x2 + 1
+ **/
+void f2(int * f2x1, int f2x2) {
+  printf("%i %i\n", f2x1[f2x2], f2x1[f2x2 + 1]);
+  f2x1[f2x2 + 1] += f2x1[f2x2];
+  printf("swpP1: v1[%i]=%i, v1[%i]=%i\n", f2x2, f2x1[f2x2], f2x2 + 1, f2x1[f2x2 + 1]);
+  f2x1[f2x2] = f2x1[f2x2 + 1] - f2x1[f2x2];
+  printf("swpP2: v1[%i]=%i, v1[%i]=%i\n", f2x2, f2x1[f2x2], f2x2 + 1, f2x1[f2x2 + 1]);
+  f2x1[f2x2 + 1] -= f2x1[f2x2];
+  printf("swpP3: v1[%i]=%i, v1[%i]=%i\n", f2x2, f2x1[f2x2], f2x2 + 1, f2x1[f2x2 + 1]);
+}

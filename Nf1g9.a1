@@ -1,0 +1,221 @@
+/*
+@func preprocess, compile, assemble, link by one transparent call
+*/
+
+/* external deps of f0 */
+#include <stdio.h> // printf();
+/* local deps of f0 */
+static int f1(const char * x1, const char * x2);
+static int f4(const char * x1);
+/**
+ * drive
+ **/
+int main(int x1, char ** x2) {
+  if (*(x2 + 1) == NULL) {
+    printf("%s\n", "provide source c/c++ file");
+    return 1;
+  }
+  if (f1(*(x2 + 1), *x2)) {
+    return 1;
+  }
+  if (f4(*(x2 + 1))) {
+    return 1;
+  }
+  return 0;
+}
+
+/* external deps of f2 */
+#include <string.h> // strcat();
+#include <stdio.h>  // printf();
+#include <stdlib.h> // system();
+/* local deps of f1 */
+static void f2(char x1[], const char * x2);
+static char * f5(const char * x1);
+/**
+ * preprocess c, c++ sources
+ * x2: name of this file
+ **/
+static int f1(const char * x1, const char * x2) {
+  /* store here cpp call */
+  char f1v1[128];
+  char * f1v4 = f5("preprocessor", *x2)
+  strcat(f1v1, f1v4);
+  strcat(f1v1, " -x ");
+   
+  /* copy source file to local variable */
+  char f1v2[10];
+  f2(f1v2, x1);
+   
+  /* cut source file extension */
+  int f1v3 = 0;
+  while (f1v2[f1v3] != '.') {
+    ++f1v3;
+  }
+  ++f1v3;
+  f1v2[f1v3] = '\0';
+   
+  /* */
+  if ((*(x1 + 8) == 'a') && (*(x1 + 9) == '1')) {
+    strcat(f1v1, "c ");
+    strcat(f1v1, x1);
+    strcat(f1v1, " -o ");  
+    strcat(f1v1, f1v2);
+    strcat(f1v1, "i11");
+    printf("preprocess: %s\n", f1v1);
+    system(f1v1);
+    return 0;
+  }
+  else if ((*(x1 + 8) == 'a') && (*(x1 + 9) == '2')) {
+    strcat(f1v1, "c++ ");
+    strcat(f1v1, x1);
+    strcat(f1v1, " -o ");  
+    strcat(f1v1, f1v2);
+    strcat(f1v1, "i21");
+    printf("preprocess: %s\n", f1v1);
+    system(f1v1);
+    return 0;
+  }
+  else {
+    printf("%s\n", "for system independent c/c++ sources use a1/a2 extensions");
+    return 1;
+  }
+}
+
+/**
+ * extract value for 'x1' from 'x2'.cnf file
+ **/
+static char * f5(const char * f5x1, const char * f5x2) {
+  /* @a a: copy f5x2 to local char array; p: to use in @b; r: since value at f5x2
+     is unchangeable; */
+  char f5v1[15];
+  f2(f5v1, f5x2);
+   
+  /* @b cut run extension of 'x2' */
+  int f5v2 = 0;
+  while (f5v1[f5v2] != '.') {
+    ++f5v2;
+  }
+  f5v1[f5v2 + 1] = 'c';
+  f5v1[f5v2 + 2] = 'n';
+  f5v1[f5v2 + 3] = 'f';
+  f5v1[f5v2 + 4] = '\0'; 
+   
+  /* get from f5v1 file value at f5x1 */
+  
+   
+  /* copy to local char array to easy operate, to return path since static */
+  static char f5v1[13];
+  f2(f4v1, f4x1);
+   
+
+   
+  
+  return X;
+}
+
+/* local deps of f2 */
+static int f3(const char * x1);
+/**
+ * init char array x1 by x2 
+ * copy values of const char pointer to char array.
+ **/
+static void f2(char x1[], const char * x2) {
+  int f2v1 = f3(x2);
+  while (f2v1) {
+    x1[f2v1 - 1] = x2[f2v1 - 1];
+    --f2v1;
+  }
+}
+
+/**
+ * return length of string
+ **/
+static int f3(const char * x1) {
+  int f3v1 = 0;
+  while (x1[f3v1] != '\0') {
+    ++f3v1;
+  }
+  return f3v1;
+}
+
+/* external deps of f4 */
+#include <string.h> // strcat();
+#include <unistd.h> // access();
+#include <stdio.h>  // printf();
+#include <stdlib.h> // system();
+/* local deps of f4 */
+static void f2(char x1[], const char * x2);
+static int f1(const char * x1);
+/**
+ * convert from system dependent source to arch dependent target.
+ * generate asm
+ *
+ * Lyrics about consts
+ * const char * x1 -- make _values_ at address read-only: x1[2] = 'z' -- impossible
+ * since char pointer point to read-only memory, addresses of which are similar
+ * to static char array except that the values at addresses of latter are changeable.
+ * Unchangeable values at char pointer is default unchangeable behavior.
+ * char * const x1 -- make _address_ read-only. 
+ **/
+static int f4(const char * f4x1) {
+  /* copy to local char array to easy operate */
+  char f4v1[13];
+  f2(f4v1, f4x1);
+  f4v1[10] = '\0';
+   
+  /* use 'i' to denote that file system dependent (preprocessed) */
+  f4v1[8] = 'i';
+   
+  /* if the system is linux based then add 1 */
+  f4v1[10] = '1';
+  f4v1[11] = '\0';
+   
+  /* check if changed filename in char array exists else call preprocessor */
+  if (access(f4v1, F_OK) != 0) {
+    if (f1(f4x1)) {
+      return 1;
+    }
+  }
+   
+  char f4v2[128] = "g";
+  if (f4v1[9] == '1') {
+    strcat(f4v2, "cc -x c ");
+  }
+  else if (f4v1[9] == '2') {
+    strcat(f4v2, "++ -x c++ ");
+  }
+  strcat(f4v2, "-fverbose-asm -Wall -Wextra -S ");
+  strcat(f4v2, f4v1);
+  strcat(f4v2, " -o ");
+   
+  /* denote that produced asm file is for x86-64 */
+  f4v1[8] = 's';
+  f4v1[11] = '1';
+  f4v1[12] = '\0';
+  strcat(f4v2, f4v1);
+  printf("compile: %s\n", f4v2);
+  system(f4v2);
+   
+  return 0;
+}
+
+/**
+assemble() {
+  f3v1=$(as $1.s211 -o $1.o2111)
+  echo "assemble: $f3v1"
+  eval $f3v1
+}
+
+link() {
+  eval $*
+  echo "link: $*"
+}
+
+preprocess $1
+
+compile
+
+assemble
+
+# https://stackoverflow.com/a/14163244
+**/

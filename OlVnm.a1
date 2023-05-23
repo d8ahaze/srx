@@ -1,0 +1,72 @@
+char * f1(int x1) {
+  /* Values of static variables are stored at some specific addresses, apparently,
+     that allows them to be accessible from global file space, since 'printf'
+     output to display the value, despite a pointer points to memory that is
+     either unallocated or misaligned with data boundaries, moreover in #1
+     created array of uninitialized values, but in #2 array of '\0'. */
+  char f1v1[6];		// 1
+  static char f1v1b[6];	// 2
+   
+  char * f1v2 = f1v1 + 5;
+  char * f1v2b = f1v1b + 5;
+   
+  while (x1) {
+    *--f1v2 = '0' + (x1 % 10);
+    *--f1v2b = '0' + (x1 % 10);
+    x1 /= 10;
+  }
+   
+  return f1v2b;
+}
+
+char * f1_2(int x1) {
+  static char f1_2v1[10];
+  int f1_2v2 = 8;
+  while (x1) {
+    f1_2v1[f1_2v2] = '0' + (x1 % 10);
+    --f1_2v2;
+    x1 /= 10;
+  }
+  ++f1_2v2;
+  return f1_2v1 + f1_2v2;
+}
+
+
+#define INT_DIGITS 19
+char * itoa(int i) {
+  static char buf[INT_DIGITS + 2];
+  char * p = buf + INT_DIGITS + 1;
+  if (i >= 0) {
+    do {
+      *--p = '0' + (i % 10);
+      i /= 10;
+    } while (i != 0);
+
+    return p;
+  }
+  else {
+    do {
+      *--p = '0' - (i % 10);
+      i /= 10;
+    } while (i != 0);
+
+    *--p = '-';
+  }
+  return 0;
+}
+
+/* external deps of f0 */
+#include <stdio.h>
+/**
+ * 
+ **/
+int main(void) {
+  int f0v1 = 789;
+  char * f0v2 = f1(f0v1);
+  printf("f0v2: %s\n", f0v2);
+  char * f0v3 = itoa(f0v1);
+  printf("f0v3: %s\n", f0v3);
+  
+  return 0;
+}
+

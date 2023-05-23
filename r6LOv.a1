@@ -1,0 +1,204 @@
+/**
+ * History of [(dir/)file] under [branch]
+ * [prg] . . -- list all files from all dirs from all refs, 
+ * [prg] X . -- list all files from X dir from all refs,
+ * [prg] . X -- list X files from all refs,
+ * [prg] X Y -- list Y files from all refs from X dirs.
+ * todo: list all files recursive from all git trees.
+ **/
+/**
+ * for example current output for [progname] gcc toplev.c is:
+ * master
+ * 100644 blob 109c9d58cbd1950b49c78a21166a916a919162da    toplev.cc
+ * r1/trunk
+ * 100644 blob 109c9d58cbd1950b49c78a21166a916a919162da    toplev.cc
+ * r1/releases/libgcj-2.95
+ * fatal: Not a valid object name r1/releases/libgcj-2.95:gcc
+ * r1/releases/gcc-9
+ * 100644 blob 397a164068d2a1ede02d9407bd14d8323256c3fc    toplev.c
+ *
+ * but expected something like this:
+ *		branch1         branch2         branchN
+ * cmtX    	vN: id          vN:id
+ *         	...
+ * cmtY    	v2: id
+ * cmtZ    	v1: id
+ **/
+#include <stdio.h>
+#include <dirent.h>
+#include <errno.h>
+#include <string.h>
+#include <stdlib.h>
+
+/* local dependencies of F main */
+static int f1(const char * f1x1, const char * f1x2, char f1x3[512][64]);
+/**
+ * drive
+ **/
+int main(int x1, char ** x2) {
+  char f0v1[512][64];
+  int f0v2 = f1(".git/refs/heads/", NULL, f0v1);
+  int f0v3 = f1(".git/refs/remotes/", NULL, f0v1);
+  int f0v4 = 0;
+  char f0v5[64] = "";
+  const char * f0v6 = "git ls-tree ";
+  while (1) {
+    if (strlen(f0v1[f0v4]) == 0) {
+      break;
+    }
+    printf("%s\n", f0v1[f0v4]);
+    strcat(f0v5, f0v6);
+    strcat(f0v5, f0v1[f0v4]);
+    if (strcmp(*(x2 + 1), ".") != 0) {
+      strcat(f0v5, ":");
+      strcat(f0v5, *(x2 + 1));
+    }
+    if (strcmp(*(x2 + 2), ".") != 0) {
+      strcat(f0v5, " | grep ");
+      /* add '\' before dot and " " around file */
+      int f0v8 = strlen(*(x2 + 2));
+      char f0v9[32];
+      int f0v10 = f0v8 + 3;
+      int f0v11 = f0v10;
+      while (f0v11) {
+        f0v9[f0v11 - 1] = '0';
+        if (f0v11 == 1) {
+          f0v9[f0v10] = '\0';
+        }
+        --f0v11;
+      }
+      f0v9[f0v10 - 1] = '\"';
+      --f0v10;
+      while (f0v8) {
+        if (*(*(x2 + 2) + f0v8) == '.') {
+          f0v9[f0v10 - 1] = '\\';
+          --f0v10;
+        }
+        f0v9[f0v10 - 1] = *(*(x2 + 2) + f0v8 - 1);
+        --f0v8;
+        --f0v10;
+      }
+      f0v9[0] = '\"';
+      strcat(f0v5, f0v9);
+    }
+    system(f0v5);
+    int f0v7 = strlen(f0v5);
+    while (f0v7) {
+      f0v5[f0v7 - 1] = '\0';
+      --f0v7;
+    }
+    ++f0v4;
+  }
+  return 0;
+}
+
+/* local dependencies of f1 */
+static void f2(char f2x1[], const char * f2x2);
+static int f3(const char * f3x1, const char * f3x2, char f3x3[], short int f3x4);
+/**
+ * x1 is the directory for recursive parsing
+ * x2 for internal usage -- pass 'NULL' when invoking
+ * x3 where to put found files.
+ **/
+static int f1(const char * f1x1, const char * f1x2, char f1x3[512][64]) {
+  /* @a if call is first then init the v1 by given dir x1 else add to v1 found
+   * dir/file.
+   * @b if call is first store given dir v1 to v2 to use in #d1 */
+  static char f1v1[64];
+  static char f1v2[32];
+  if ((f1x1 != NULL) && (f1x2 == NULL)) {
+    f2(f1v1, f1x1);
+    f2(f1v2, f1x1);
+  }
+  else if ((f1x1 == NULL) && (f1x2 != NULL)) {
+    strcat(f1v1, f1x2);
+  }
+   
+  /* @c */
+  struct dirent ** f1v3;
+  int f1v4 = scandir(f1v1, &f1v3, NULL, alphasort);
+   
+  /* @d */
+  if ((f1v4 == -1) && (errno == 20)) {
+    /* @d1 cut given dir. to output path to and name of file inside given dir. */
+    char f1v5[32];
+    signed char f1v6 = f3(f1v1, f1v2, f1v5, 0);
+    /* d2 */
+    static int f1v10 = 0;
+    f2(f1x3[f1v10], f1v5);
+    ++f1v10;
+    // printf("%s\n", f1v5);
+    /* @d3 cut filename to back to dir containing file */
+    signed char f1v7 = f3(f1v1, f1x2, f1v1, 1);
+    /* @d4 */
+    return 0;
+  }
+  else if (f1x1 == NULL) {
+    strcat(f1v1, "/");
+  }
+   
+  /* @e */
+  while (f1v4--) {
+    /* @e1 Check if '..' is achived. */
+    if (f1v4 == 1) {
+      f1v4 = 0;
+      /* @e2 Cut yet parsed dir. */
+      short int f1v9 = strlen(f1v1);
+      f1v1[f1v9 - 1] = '\0';
+      --f1v9;
+      while (f1v1[f1v9 - 1] != '/') {
+        f1v1[f1v9 - 1] = '\0';
+        --f1v9;
+      }
+      continue;
+    }
+    signed char f1v8 = f1(NULL, f1v3[f1v4]->d_name, f1x3);
+  }
+   
+  return 0;
+}
+
+/**
+ * init or reassign char array x1[] by x2
+ **/
+static void f2(char f2x1[], const char * f2x2) {
+  int f2v1 = strlen(f2x2);
+  while (f2v1 != -1) {
+    f2x1[f2v1 - 1] = f2x2[f2v1 - 1];
+    --f2v1;
+  }
+}
+
+/**
+ * x1: .git/refs/remotes/r1/releases/libgcj-2.95
+ * x2: .git/refs/remotes/
+ * x3: place here: r1/releases/libgcj-2.95
+ * x4: 0
+ * ret: 0 -- cutting from the start of string is done.
+ *
+ * x1: .git/refs/heads/zxcd/z1
+ * x2: z1
+ * x3: place here: .git/refs/heads/zxcd/
+ * x4: 1 -- cut from the end of a string.
+ * ret: 1 -- cutting a string from end is done.
+ **/
+static int f3(const char * f3x1, const char * f3x2, char f3x3[], short int f3x4) {
+  int f3v1 = strlen(f3x1);
+  int f3v2 = strlen(f3x2);
+  if (f3x4 == 1) {
+    while ((f3x1[f3v1 - 1] == f3x2[f3v2 - 1]) || (f3v2 != 0)) {
+      f3x3[f3v1 - 1] = '\0';
+      --f3v1;
+      --f3v2;
+    }
+    return 1;
+  }
+  int f3v3 = 1;
+  while (f3v2 != f3v1) {                    	// v2 3; v1=7
+    f3x3[f3v1 - f3v2 - 1] = f3x1[f3v1 - f3v3];	//  3 1 [3] [6]
+    ++f3v2;					//  4 2 [2] [5]
+    ++f3v3;					//  5 3 [1] [4]
+  }						//  6 4 [0] [3]
+  f3x3[f3v3 - 1] = '\0';
+  return 0;
+}
