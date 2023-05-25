@@ -11,6 +11,8 @@ int main(int x1, char ** x2) {
    
   if (x1 == 1) {
     printf("%s\n", "provide IPv4 address");
+    printf("%s%s %s\n", "something like a ", x2[0], "192.168.1.0/22");
+    return 1;
   }
    
   /* counters */
