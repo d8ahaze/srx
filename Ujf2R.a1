@@ -236,10 +236,6 @@ void f3_2(unsigned char * x1, unsigned char x2, unsigned char * x3) {
   unsigned char v1 = 1;
   unsigned char v2 = 0;
   while (v1 != (x2 + 1)) {
-    if (x1[v2] == 0) {
-      ++v2;
-      continue;
-    }
     *x3 += x1[v2] * f4(2, x2 - v1);
     ++v1;
     ++v2;
@@ -262,36 +258,31 @@ unsigned char f4(unsigned char x1, unsigned char x2) {
 }
 
 void f5(unsigned char ** x1, unsigned char x2) {
-  // extern int printf(const char * restrict x1, ...);
   unsigned char v1 = 0;
   unsigned char v2 = 0;
   if (x2 < 8) {
     v1 = 0;
-    v2 = x2 - 1;
+    v2 = x2;
   }
   else if (x2 < 16) {
     v1 = 1;
     v2 = x2 - 8;
-  //  printf("elif2: %d %d %d\n", v1, x2, v2);
   }
   else if (x2 < 24) {
     v1 = 2;
     v2 = x2 - 16;
-  //  printf("elif3: %d %d %d\n", v1, x2, v2);
   }
   else {
     v1 = 3;
     v2 = x2 - 24;
   }
   while (1) {
-   // printf("before: f3.x1[%d][%d] = %d\n", v1, v2, x1[v1][v2]);
     if (x1[v1][v2] == 0) {
       x1[v1][v2] = 1;
     }
     else {
       x1[v1][v2] = 0;
     }
-    // printf("after: f3.x1[%d][%d] = %d\n", v1, v2, x1[v1][v2]);
     if ((v2 == 7) && (v1 == 3)) {
       break;
     }
