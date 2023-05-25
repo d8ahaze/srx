@@ -8,6 +8,7 @@ int main(int x1, char ** x2) {
   void f3(unsigned char * x1, unsigned char x2, unsigned char * x3);
   void f5(unsigned char ** x1, unsigned char x2);
   void f3_2(unsigned char * x1, unsigned char x2, unsigned char * x3);
+  extern void free(void * x1);
    
   if (x1 == 1) {
     printf("%s\n", "provide IPv4 address");
@@ -182,6 +183,8 @@ int main(int x1, char ** x2) {
     }
   }
   printf("%s%d\n", "Total num of hosts in the net: ", v12 - 2);
+   
+  free(v6); free(v9);
    
   return 0;
 }
