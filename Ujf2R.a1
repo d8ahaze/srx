@@ -12,7 +12,15 @@ int main(int x1, char ** x2) {
   if (x1 == 1) {
     printf("%s\n", "provide IPv4 address");
     printf("%s%s %s\n", "something like a ", x2[0], "192.168.1.0/22");
+    printf("%s%s %s\n", "or: ", x2[0], "100.64.0.0/10 -r");
+    printf("%s\n", "to view rules by which values are caclulated.");
     return 1;
+  }
+  if (x1 == 3) {
+    printf("%s\n", "Subnet mask = first /N ones, the rest zeros");
+    printf("%s\n", "Network IP = bitwise_AND(IP_adr, Subnet_mask)");
+    printf("%s\n", "Broadcast = bitwise_NOT(bits after /N of Network IP)");
+    printf("%s\n", "Total num = mult(difference between each oct + 1)");
   }
    
   /* counters */
@@ -154,6 +162,26 @@ int main(int x1, char ** x2) {
     ++v5;
   }
   printf(" (%d.%d.%d.%d)\n", v11[0], v11[1], v11[2], v11[3]);
+   
+  // first, last host's ip
+  printf("%s", "IP address of the first host:  ");
+  printf("%d.%d.%d.%d\n", v10[0], v10[1], v10[2], v10[3] + 1);
+  printf("%s", "IP address of the last host:   ");
+  printf("%d.%d.%d.%d\n", v11[0], v11[1], v11[2], v11[3] - 1);
+   
+  // number of hosts
+  v5 = 0;
+  unsigned int v12 = 1;
+  while (v5 != 4) {
+    if (v10[v5] == v11[v5]) {
+      ++v5;
+    }
+    else {
+      v12 *= v11[v5] - v10[v5] + 1;
+      ++v5;
+    }
+  }
+  printf("%s%d\n", "Total num of hosts in the net: ", v12 - 2);
    
   return 0;
 }
