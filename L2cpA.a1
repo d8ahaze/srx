@@ -1,0 +1,90 @@
+#include "sox9U.a1t"
+typedef struct t_sox9U_1 t1;
+
+int main(int x1, char ** x2) {
+  extern void * dlopen(const char * x1, int x2);
+  extern void * dlsym(void * restrict x1, const char * restrict x2);
+  void * MxT51 = dlopen("MxT51.e1112", 0x00001);
+  unsigned char (*FX)(const char *, unsigned char *) = dlsym(MxT51, "f_MxT51_1");
+   
+  extern int printf(const char * restrict x1, ...);
+   
+  int f1(const char * x1, int * x2, unsigned char * x3, unsigned char * x4);
+   
+  /* convert ipv4 string to decimal */
+  unsigned char v2[4] = {0, 0, 0, 0};
+  unsigned char v3 = FX(x2[1], v2);
+   
+  printf("%d.%d.%d.%d\n", v2[0], v2[1], v2[2], v2[3]);
+   
+  unsigned char v1;
+  /* get interface info */
+  int v4;		// interface index
+  unsigned char v5[6];	// MAC
+  unsigned char v6[4];	// IPv4
+  // x2[1] // interface name
+  f1(x2[2], &v4, v5, v6);
+   
+  printf("Interface index: %d\n", v4);
+   
+  v1 = 0;
+  printf("MAC address: ");
+  while (v1 != 6) {
+    printf("%x:", v5[v1]);
+    ++v1;
+  }
+  printf("\n");
+   
+  v1 = 0;
+  printf("IPv4 address: ");
+  while (v1 != 4) {
+    printf("%d.", v6[v1]);
+    ++v1;
+  }
+  printf("\n");
+   
+  return 0;
+}
+
+/**
+ * x1 <-- Interface name;
+ * x2 --> Interface index;
+ * x3 --> MAC;
+ * x4 --> IPv4;
+ **/
+int f1(const char * x1, int * x2, unsigned char * x3, unsigned char * x4) {
+  extern int socket(int x1, int x2, int x3);
+  extern char * strcpy (char * restrict x1, const char * restrict x2);
+  extern int ioctl(int x1, unsigned long int x2, ...);
+  extern void * memcpy(void * restrict x1, const void * restrict x2, unsigned long int x3);
+  extern int close(int x1);
+   
+  unsigned char v3 = 0;
+   
+  int v1 = socket(17, 3, 0x608); // htons(0x806)
+  t1 v2;
+   
+  /* get interface index */
+  strcpy(v2.ifr_ifrn.ifrn_name, x1);
+  ioctl(v1, 0x8933, &v2);
+  *x2 = v2.ifr_ifru.ifru_ivalue;
+   
+  /* get MAC of the sender */
+  ioctl(v1, 0x8927, &v2);
+  while (v3 != 6) {
+    x3[v3] = v2.ifr_ifru.ifru_hwaddr.v2[v3];
+    ++v3;
+  }
+   
+  /* get IPv4 of the sender, i.e. ip of my host */
+  ioctl(v1, 0x8915, &v2);
+  v3 = 0;
+  while (v3 != 4) {
+    x4[v3] = v2.ifr_ifru.ifru_addr.v2[v3 + 2];
+    ++v3;
+  }
+   
+  close(v1);
+   
+  return 0;
+}
